@@ -29,7 +29,6 @@ export default class WrapperRepository {
   }
 
   async findBy({ clause, ...payload }: Find<typeof Model>) {
-    console.log(payload)
     const keys = Object.keys(payload)
 
     if (keys.length === 0) return null

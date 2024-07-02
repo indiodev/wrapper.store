@@ -12,7 +12,7 @@ export default class ProductController {
   constructor(private productService: ProductService) {}
 
   async stripe({ request, response, auth }: HttpContext) {
-    const { ...payload } = await request.validateUsing(CreateProductValidator)
+    const payload = await request.validateUsing(CreateProductValidator)
     const result = await this.productService.stripe({
       ...payload,
       user_id: auth.user?.id,
@@ -21,11 +21,9 @@ export default class ProductController {
   }
 
   async shopify({ request, response, auth }: HttpContext) {
-    const { ...payload } = await request.validateUsing(CreateProductValidator)
-    // const { wrapper_id } = await UpdateProductValidator.validate(request.params())
+    const payload = await request.validateUsing(CreateProductValidator)
     const result = await this.productService.shopify({
       ...payload,
-      // wrapper_id,
       user_id: auth.user?.id,
     })
     return response.ok(result)

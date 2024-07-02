@@ -1,13 +1,16 @@
+import { ShopifyCallbackDTO, ShopifyInstallDTO } from '#dto/shopify.dto'
 import ApplicationException from '#exceptions/application'
 import AuthRepository from '#repositories/auth.repository'
 import UserRepository from '#repositories/user.repository'
+import AuthShopifyService from '#services/shopify/auth.service'
 import { inject } from '@adonisjs/core'
 
 @inject()
 export class AuthService {
   constructor(
     private userRepository: UserRepository,
-    private authRepository: AuthRepository
+    private authRepository: AuthRepository,
+    private shopifyAuthService: AuthShopifyService
   ) {}
 
   async signUp(payload: { email: string; password: string; name: string }) {
@@ -42,5 +45,14 @@ export class AuthService {
         status: 400,
       })
     return await this.authRepository.create(user)
+  }
+
+  async shopifyInstall(payload: ShopifyInstallDTO) {
+    return await this.shopifyAuthService.install(payload)
+  }
+
+  async shopifyCallback(payload: ShopifyCallbackDTO) {
+    const result = await this.shopifyAuthService.callback(payload)
+    return result
   }
 }

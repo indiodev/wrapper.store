@@ -63,8 +63,10 @@
     "@aws-sdk/s3-request-presigner": "^3.600.0",
     "@shopify/shopify-api": "^11.0.1",
     "@vinejs/vine": "^2.1.0",
+    "axios": "^1.7.2",
     "flydrive": "^1.0.2",
     "luxon": "^3.4.4",
+    "nonce": "^1.0.4",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.2",
     "stripe": "^15.12.0"

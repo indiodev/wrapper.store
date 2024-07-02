@@ -15,9 +15,6 @@ export default class Wrapper extends BaseSerialModel {
   @column()
   declare hostname: string | null
 
-  @column({ columnName: 'access_token', serializeAs: 'access_token' })
-  declare access_token: string | null
-
   // @column()
   // declare provider: Provider
 

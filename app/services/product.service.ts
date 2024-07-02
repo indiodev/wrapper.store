@@ -32,14 +32,14 @@ export class ProductService {
         status: 404,
       })
     }
-    // const [store] = await this.storeService.upload(
-    //   [{ file: photo, identifier: 'photo' }],
-    //   'products'
-    // )
+    const [store] = await this.storeService.upload(
+      [{ file: photo, identifier: 'photo' }],
+      'products'
+    )
 
     const created = await this.productRepository.create({
       ...payload,
-      // photo: store.url,
+      photo: store.url,
       provider: Provider.STRIPE,
       userId: user_id,
     })
@@ -75,7 +75,6 @@ export class ProductService {
   }
 
   async shopify({ currencies, photo, wrapper_id, user_id, ...payload }: CreateProductDTO) {
-    console.log({ currencies, photo, wrapper_id, user_id, ...payload })
     const user = await this.userRepository.findBy({ id: user_id })
 
     if (!user) {
@@ -85,15 +84,14 @@ export class ProductService {
         status: 404,
       })
     }
-    // const [store] = await this.storeService.upload(
-    //   [{ file: photo, identifier: 'photo' }],
-    //   'products'
-    // )
+    const [store] = await this.storeService.upload(
+      [{ file: photo, identifier: 'photo' }],
+      'products'
+    )
 
     const created = await this.productRepository.create({
       ...payload,
-      // photo: store.url,
-      photo: 'indios.png',
+      photo: store.url,
       provider: Provider.SHOPIFY,
       userId: user_id,
     })

@@ -5,7 +5,6 @@ export const CreateWrapperSchema = vine.object({
   secret_key: vine.string().trim(),
   public_key: vine.string().trim(),
   hostname: vine.string().trim().optional(),
-  access_token: vine.string().trim().optional(),
   // provider: vine.enum(Provider).optional(),
   user_id: vine.number().positive().optional(),
 })
@@ -15,7 +14,6 @@ export const UpdateWrapperSchema = vine.object({
   secret_key: vine.string().trim().optional(),
   public_key: vine.string().trim().optional(),
   hostname: vine.string().trim().optional(),
-  access_token: vine.string().trim().optional(),
   user_id: vine.number().positive().optional(),
 })
 

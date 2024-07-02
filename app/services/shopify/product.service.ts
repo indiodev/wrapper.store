@@ -20,9 +20,11 @@ export default class ProductShopifyService extends BaseShopifyService {
     wrapper_id,
     ...payload
   }: Partial<UpdateProductDTO> & { wrapper_id: number }) {
-    const client = await this.init(wrapper_id)
+    const {
+      shopify: { rest },
+    } = await this.initialize(wrapper_id)
 
-    const { body } = await client.post({
+    const { body } = await rest.post({
       path: 'products',
       data: {
         product: {

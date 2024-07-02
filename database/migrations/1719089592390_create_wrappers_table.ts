@@ -11,7 +11,6 @@ export default class extends BaseSchema {
       table.string('secret_key').notNullable().unique()
       table.string('public_key').notNullable().unique()
       table.string('hostname').nullable().unique()
-      table.string('access_token').nullable().unique()
       // table.enum('provider', this.provider).notNullable()
 
       table
