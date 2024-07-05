@@ -4,6 +4,7 @@ import AuthRepository from '#repositories/auth.repository'
 import UserRepository from '#repositories/user.repository'
 import AuthShopifyService from '#services/shopify/auth.service'
 import { inject } from '@adonisjs/core'
+import { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export class AuthService {
@@ -47,12 +48,12 @@ export class AuthService {
     return await this.authRepository.create(user)
   }
 
-  async shopifyInstall(payload: ShopifyInstallDTO) {
-    return await this.shopifyAuthService.install(payload)
+  async shopifyInstall(ctx: HttpContext, payload: ShopifyInstallDTO) {
+    return await this.shopifyAuthService.install(ctx, payload)
   }
 
-  async shopifyCallback(payload: ShopifyCallbackDTO) {
-    const result = await this.shopifyAuthService.callback(payload)
+  async shopifyCallback(ctx: HttpContext, payload: ShopifyCallbackDTO) {
+    const result = await this.shopifyAuthService.callback(ctx, payload)
     return result
   }
 }

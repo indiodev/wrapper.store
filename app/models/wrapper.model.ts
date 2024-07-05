@@ -1,7 +1,8 @@
 import BaseSerialModel from '#models/base.model'
+import ShopifySession from '#models/shopify.session.model'
 import User from '#models/user.model'
-import { belongsTo, column } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { belongsTo, column, hasOne } from '@adonisjs/lucid/orm'
+import type { BelongsTo, HasOne } from '@adonisjs/lucid/types/relations'
 
 export default class Wrapper extends BaseSerialModel {
   static table = 'wrappers'
@@ -26,4 +27,7 @@ export default class Wrapper extends BaseSerialModel {
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @hasOne(() => ShopifySession)
+  declare session: HasOne<typeof ShopifySession>
 }

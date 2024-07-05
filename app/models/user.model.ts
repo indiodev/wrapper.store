@@ -36,6 +36,12 @@ export default class User extends compose(BaseSerialModel, AuthFinder) {
   })
   declare stripe_public_key: string | null
 
+  @column({
+    columnName: 'shopify_access_token',
+    serializeAs: 'shopify_access_token',
+  })
+  declare shopify_access_token: string | null
+
   @hasMany(() => Wrapper)
   declare wrappers: HasMany<typeof Wrapper>
 

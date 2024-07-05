@@ -1,6 +1,7 @@
 import ApplicationException from '#exceptions/application'
 import WrapperRepository from '#repositories/wrapper.repository'
 import { LATEST_API_VERSION, shopifyApi } from '@shopify/shopify-api'
+import { restResources } from '@shopify/shopify-api/rest/admin/2024-07'
 
 export default class BaseShopifyService {
   constructor(protected wrapperRepository: WrapperRepository) {}
@@ -14,9 +15,10 @@ export default class BaseShopifyService {
       apiSecretKey: wrapper.secret_key,
       apiKey: wrapper.public_key,
       scopes: ['write_products', 'read_products'],
-      hostName: wrapper.hostname!,
+      hostName: '24fe-138-84-43-235.ngrok-free.app',
       apiVersion: LATEST_API_VERSION,
       isEmbeddedApp: false,
+      restResources,
     })
 
     return {

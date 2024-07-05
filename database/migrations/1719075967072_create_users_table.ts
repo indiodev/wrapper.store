@@ -12,6 +12,8 @@ export default class extends BaseSchema {
       table.string('stripe_secret_key').nullable().unique()
       table.string('stripe_public_key').nullable().unique()
 
+      table.string('shopify_access_token').nullable().unique()
+
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })

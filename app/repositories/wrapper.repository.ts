@@ -36,7 +36,7 @@ export default class WrapperRepository {
     if (keys.length === 1) {
       const [value] = Object.values(payload).map((item) => item !== null && item)
       const [key] = Object.keys(payload).map((k) => stringHelpers.snakeCase(k))
-      const wrapper = await Model?.query().where(key, value).first()
+      const wrapper = await Model?.query().where(key, value).preload('session').first()
       if (!wrapper) return null
       return wrapper
     }
@@ -54,7 +54,7 @@ export default class WrapperRepository {
       .flatMap((key) => ` "wrappers"."${stringHelpers.snakeCase(key)}" = ? `)
       .join(` ${clause} `)
 
-    const user = await Model?.query().whereRaw(raw, values).first()
+    const user = await Model?.query().whereRaw(raw, values).preload('session').first()
     if (!user) return null
     return user
   }

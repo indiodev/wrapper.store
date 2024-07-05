@@ -1,20 +1,23 @@
 import { ShopifyCallbackDTO, ShopifyInstallDTO } from '#dto/shopify.dto'
 import ApplicationException from '#exceptions/application'
+import UserRepository from '#repositories/user.repository'
 import WrapperRepository from '#repositories/wrapper.repository'
 import BaseShopifyService from '#services/shopify/base.service'
 import { inject } from '@adonisjs/core'
-import axios from 'axios'
-import { randomBytes } from 'node:crypto'
+import { HttpContext } from '@adonisjs/core/http'
 
-const forwardingAddress = 'https://9f2c-2803-9810-6317-8510-9c4c-cf65-e8dc-ae06.ngrok-free.app' // our ngrok url
+const forwardingAddress = 'https://81d7-138-84-43-168.ngrok-free.app' // our ngrok url
 
 @inject()
 export default class AuthShopifyService extends BaseShopifyService {
-  constructor(protected wrapperRepository: WrapperRepository) {
+  constructor(
+    protected wrapperRepository: WrapperRepository,
+    private userRepository: UserRepository
+  ) {
     super(wrapperRepository)
   }
 
-  async install(payload: ShopifyInstallDTO) {
+  async install(ctx: HttpContext, payload: ShopifyInstallDTO) {
     try {
       const wrapper = await this.wrapperRepository.findBy({
         hostname: payload.shop,
@@ -29,12 +32,18 @@ export default class AuthShopifyService extends BaseShopifyService {
 
       const { shopify } = await this.initialize(wrapper?.id!)
 
-      const STATE = randomBytes(16).toString('hex')
+      await shopify.auth.begin({
+        shop: payload.shop,
+        callbackPath: '/auth/shopify/callback',
+        rawRequest: ctx.request.request,
+        rawResponse: ctx.response.response,
+        isOnline: false,
+      })
+      // const STATE = randomBytes(16).toString('hex')
 
-      const REDIRECT_URI = forwardingAddress + '/auth/shopify/callback'
+      // const REDIRECT_URI = forwardingAddress + '/auth/shopify/callback'
 
-      const INSTALL_URL = `https://${payload.shop}/admin/oauth/authorize?client_id=${shopify.config.apiKey}&scope=${shopify.config.scopes?.toString()}&state=${STATE}&redirect_uri=${REDIRECT_URI}`
-      return { url: INSTALL_URL, state: STATE }
+      // const INSTALL_URL = `https://${payload.shop}/admin/oauth/authorize?client_id=${shopify.config.apiKey}&scope=${shopify.config.scopes?.toString()}&state=${STATE}&redirect_uri=${REDIRECT_URI}`
     } catch (error) {
       console.error(error)
 
@@ -42,7 +51,7 @@ export default class AuthShopifyService extends BaseShopifyService {
     }
   }
 
-  async callback(payload: ShopifyCallbackDTO) {
+  async callback(ctx: HttpContext, payload: ShopifyCallbackDTO) {
     try {
       const wrapper = await this.wrapperRepository.findBy({
         hostname: payload.shop,
@@ -68,27 +77,20 @@ export default class AuthShopifyService extends BaseShopifyService {
         })
       }
 
-      const accessTokenRequestUrl = `https://${payload.shop}/admin/oauth/access_token`
-      const accessTokenPayload = {
-        client_id: shopify.config.apiKey,
-        client_secret: shopify.config.apiSecretKey,
-        code: payload.code,
-      }
-
-      const {
-        data: { access_token },
-      } = await axios.post<{ access_token: string; scope: string }>(
-        accessTokenRequestUrl,
-        accessTokenPayload
-      )
-
-      const response = await axios.get(`https://${payload.shop}/admin/shop.json`, {
-        headers: {
-          'X-Shopify-Access-Token': access_token,
-        },
+      const callback = await shopify.auth.callback({
+        rawRequest: ctx.request.request,
+        rawResponse: ctx.response.response,
       })
 
-      return response.data
+      await wrapper.related('session').create({
+        shop: callback.session.shop,
+        state: callback.session.state,
+        access_token: callback.session.accessToken,
+        scope: callback.session.scope,
+        is_online: callback.session.isOnline,
+        expires: callback.session.expires,
+        id: callback.session.id,
+      })
     } catch (error) {
       console.error(error)
       throw new ApplicationException(error.message, {

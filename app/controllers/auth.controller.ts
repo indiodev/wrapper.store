@@ -19,18 +19,15 @@ export default class AuthController {
     return response.ok(result)
   }
 
-  async shopifyInstall({ response, request }: HttpContext) {
-    const payload = await ShopifyInstallValidator.validate(request.qs())
-    const result = await this.authService.shopifyInstall(payload)
-    return response.redirect(result.url)
+  async shopifyInstall(ctx: HttpContext) {
+    const payload = await ShopifyInstallValidator.validate(ctx.request.qs())
+    console.log('INSTALL', payload)
+    await this.authService.shopifyInstall(ctx, payload)
   }
 
-  async shopifyCallback({ response, request }: HttpContext) {
-    const payload = await ShopifyCallbackValidator.validate(request.qs())
-    const result = await this.authService.shopifyCallback(payload)
-    // return response.ok(result)
-    const url = `https://${result.shop.domain}/admin/apps/luca-11`
-    console.log({ url })
-    return response.redirect(url)
+  async shopifyCallback(ctx: HttpContext) {
+    const payload = await ShopifyCallbackValidator.validate(ctx.request.qs())
+    await this.authService.shopifyCallback(ctx, payload)
+    return ctx.response.redirect('/')
   }
 }

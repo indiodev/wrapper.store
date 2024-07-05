@@ -102,6 +102,7 @@ export class ProductService {
       ...payload,
       wrapper_id: wrapper_id!,
       id: created.id,
+      photo: store.url,
     })
 
     await shopify.related('prices').createMany(

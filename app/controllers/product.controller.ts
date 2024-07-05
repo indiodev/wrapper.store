@@ -20,13 +20,13 @@ export default class ProductController {
     return response.ok(result)
   }
 
-  async shopify({ request, response, auth }: HttpContext) {
-    const payload = await request.validateUsing(CreateProductValidator)
+  async shopify(ctx: HttpContext) {
+    const payload = await ctx.request.validateUsing(CreateProductValidator)
     const result = await this.productService.shopify({
       ...payload,
-      user_id: auth.user?.id,
+      user_id: ctx.auth.user?.id,
     })
-    return response.ok(result)
+    return ctx.response.ok(result)
   }
 
   async show({ request, response }: HttpContext) {
