@@ -1,19 +1,13 @@
 import { ShopifyCallbackDTO, ShopifyInstallDTO } from '#dto/shopify.dto'
 import ApplicationException from '#exceptions/application'
-import UserRepository from '#repositories/user.repository'
 import WrapperRepository from '#repositories/wrapper.repository'
 import BaseShopifyService from '#services/shopify/base.service'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
-const forwardingAddress = 'https://81d7-138-84-43-168.ngrok-free.app' // our ngrok url
-
 @inject()
 export default class AuthShopifyService extends BaseShopifyService {
-  constructor(
-    protected wrapperRepository: WrapperRepository,
-    private userRepository: UserRepository
-  ) {
+  constructor(protected wrapperRepository: WrapperRepository) {
     super(wrapperRepository)
   }
 
