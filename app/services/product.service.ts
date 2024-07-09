@@ -56,7 +56,7 @@ export class ProductService {
 
     const prices = await this.stripePriceService.create({
       currencies,
-      amount: created.amount,
+      price: created.price,
       id: stripe.id,
       user_id,
       stripe_product_id: stripe.stripe_product_id!,

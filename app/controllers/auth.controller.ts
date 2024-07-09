@@ -21,7 +21,6 @@ export default class AuthController {
 
   async shopifyInstall(ctx: HttpContext) {
     const payload = await ShopifyInstallValidator.validate(ctx.request.qs())
-    console.log('INSTALL', payload)
     await this.authService.shopifyInstall(ctx, payload)
   }
 

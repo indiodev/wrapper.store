@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table.increments('id')
       table.string('name').notNullable()
       table.text('description').notNullable()
-      table.float('amount').notNullable()
+      table.float('price').notNullable()
       table.integer('quantity').notNullable()
       table.string('photo').notNullable()
       table.enum('provider', this.provider).notNullable()

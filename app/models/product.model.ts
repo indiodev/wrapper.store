@@ -16,7 +16,7 @@ export default class Product extends BaseSerialModel {
   declare description: string
 
   @column()
-  declare amount: number
+  declare price: number
 
   @column()
   declare quantity: number

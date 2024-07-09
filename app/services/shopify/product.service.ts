@@ -56,7 +56,7 @@ export default class ProductShopifyService extends BaseShopifyService {
 
     product.variants = [
       {
-        price: payload.amount!,
+        price: payload.price!,
         inventory_quantity: payload.quantity,
       },
     ]

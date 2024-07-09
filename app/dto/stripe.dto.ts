@@ -10,7 +10,7 @@ export type CreateStripeProductDTO = Pick<
 }
 export type CreateStripePriceDTO = {
   id: number
-  amount: number
+  price: number
   currencies: string[]
   stripe_product_id: string
   user_id?: number

@@ -22,7 +22,7 @@ export default class PriceStripeService extends BaseStripeService {
       const price = await client.prices.create({
         currency,
         product: payload.stripe_product_id!,
-        unit_amount: payload.amount * 100,
+        unit_amount: payload.price * 100,
       })
 
       prices.push(price)
