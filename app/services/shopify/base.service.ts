@@ -15,7 +15,7 @@ export default class BaseShopifyService {
       apiSecretKey: wrapper.secret_key,
       apiKey: wrapper.public_key,
       scopes: ['write_products', 'read_products'],
-      hostName: '24fe-138-84-43-235.ngrok-free.app',
+      hostName: 'indio-wrapper-api-0e2cd9be1343.herokuapp.com',
       apiVersion: LATEST_API_VERSION,
       isEmbeddedApp: false,
       restResources,
