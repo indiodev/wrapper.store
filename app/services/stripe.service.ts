@@ -1,3 +1,4 @@
+import { ParamsProductDTO } from '#dto/product.dto'
 import {
   CreateStripePriceDTO,
   CreateStripeProductDTO,
@@ -110,6 +111,45 @@ export default class StripeService {
         productId: payload.id!,
       }))
     )
+  }
+
+  async checkoutProduct(payload: ParamsProductDTO) {
+    const product = await this.productRepository.findBy({ id: payload.id })
+
+    if (!product)
+      throw new ApplicationException('Produto não encontrado', {
+        cause: 'Product not found',
+        code: 'PRODUCT_NOT_FOUND',
+        status: 404,
+      })
+
+    await product.load('user', (u) =>
+      u
+        .select(['id'])
+        .preload('stripe', (s) => s.select(['secret_key', 'id', 'publishable_key', 'user_id']))
+    )
+
+    if (!product?.user?.stripe?.secret_key || !product?.user?.stripe?.publishable_key)
+      throw new ApplicationException('Chave publica e privada não existem', {
+        status: 404,
+        cause: 'Public key and secret key not found',
+        code: 'PUBLIC_KEY_AND_SECRET_KEY_NOT_FOUND',
+      })
+
+    const client = new Stripe(product.user.stripe.secret_key)
+
+    const { url } = await client.checkout.sessions.create({
+      mode: 'payment',
+      success_url: 'http://localhost:3000/products',
+      line_items: [
+        {
+          price: product?.prices?.[0]?.stripe_price_id!,
+          quantity: 1,
+        },
+      ],
+    })
+
+    return { url }
   }
 
   async getTotalProduct(payload: { secret_key: string }) {

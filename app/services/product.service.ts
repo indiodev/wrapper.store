@@ -16,7 +16,6 @@ export class ProductService {
     private userRepository: UserRepository,
     private storeUploadService: StoreUploadService,
     private stripeService: StripeService,
-    // private priceRepository: PriceRepository,
     private shopifyProductService: ProductShopifyService
   ) {}
 

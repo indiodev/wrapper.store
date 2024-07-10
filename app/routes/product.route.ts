@@ -4,9 +4,18 @@ import router from '@adonisjs/core/services/router'
 
 export const ProductRoute = router
   .group(function () {
-    router.post('/shopify', [ProductController, 'shopify'])
-    router.get('/paginate', [ProductController, 'paginate'])
-    router.get('/:id', [ProductController, 'show'])
+    router
+      .group(function () {
+        router.post('/shopify', [ProductController, 'shopify'])
+        router.get('/paginate', [ProductController, 'paginate'])
+      })
+      .middleware(middleware.auth())
+
+    router
+      .group(function () {
+        router.get('/checkout', [ProductController, 'checkout'])
+        router.get('/', [ProductController, 'show'])
+      })
+      .prefix('/:id')
   })
   .prefix('product')
-  .middleware(middleware.auth())

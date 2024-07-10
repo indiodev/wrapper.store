@@ -1,6 +1,8 @@
 import { ProductService } from '#services/product.service'
+import StripeService from '#services/stripe.service'
 import {
   CreateProductValidator,
+  ParamsProductValidator,
   QueryProductValidator,
   UpdateProductValidator,
 } from '#validators/product.validator'
@@ -9,7 +11,10 @@ import { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class ProductController {
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private stripeService: StripeService
+  ) {}
 
   async shopify(ctx: HttpContext) {
     const payload = await ctx.request.validateUsing(CreateProductValidator)
@@ -30,5 +35,11 @@ export default class ProductController {
     const payload = await QueryProductValidator.validate(request.qs())
     const result = await this.productService.paginate(payload)
     return response.ok(result)
+  }
+
+  async checkout({ request, response }: HttpContext) {
+    const payload = await ParamsProductValidator.validate(request.params())
+    const { url } = await this.stripeService.checkoutProduct(payload)
+    return response.redirect(url!)
   }
 }

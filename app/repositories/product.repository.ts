@@ -54,7 +54,7 @@ export default class ProductRepository {
       .flatMap((key) => ` "products"."${stringHelpers.snakeCase(key)}" = ? `)
       .join(` ${clause} `)
 
-    const user = await Model?.query().whereRaw(raw, values).first()
+    const user = await Model?.query().whereRaw(raw, values).preload('prices').first()
     if (!user) return null
     return user
   }
