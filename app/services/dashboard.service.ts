@@ -40,6 +40,10 @@ export class DashboardService {
       secret_key: user?.stripe?.secret_key,
     })
 
-    return { product: totalProduct, balance: totalBalance }
+    const totalSales = await this.stripeService.getTotalSales({
+      secret_key: user?.stripe?.secret_key,
+    })
+
+    return { product: totalProduct, balance: totalBalance, sales: totalSales }
   }
 }

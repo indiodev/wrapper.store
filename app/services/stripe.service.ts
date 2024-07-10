@@ -115,7 +115,9 @@ export default class StripeService {
   async getTotalProduct(payload: { secret_key: string }) {
     const client = new Stripe(payload.secret_key!)
 
-    const prices = await client.products.list({})
+    const prices = await client.products.list({
+      limit: 100,
+    })
 
     return { total: prices.data.length }
   }
@@ -123,9 +125,16 @@ export default class StripeService {
   async getTotalSales(payload: { secret_key: string }) {
     const client = new Stripe(payload.secret_key!)
 
-    const balance = await client.balanceTransactions.list({})
+    const balance = await client.paymentIntents.list({
+      limit: 100,
+    })
 
-    return { balance: balance }
+    const total = balance.data.reduce((a, b) => a + b.amount, 0)
+
+    return {
+      total,
+      // totalItems: balance.data.length
+    }
   }
 
   async getBalance(payload: { secret_key: string }) {
