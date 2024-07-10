@@ -129,7 +129,9 @@ export default class StripeService {
       limit: 100,
     })
 
-    const total = balance.data.reduce((a, b) => a + b.amount, 0)
+    const total = balance.data.reduce((a, b) => {
+      return b.status === 'succeeded' ? a + b.amount : 0
+    }, 0)
 
     return {
       total,
