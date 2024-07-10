@@ -1,6 +1,5 @@
 import { CreateProductDTO, QueryProductDTO } from '#dto/product.dto'
 import ApplicationException from '#exceptions/application'
-import PriceRepository from '#repositories/price.repository'
 import ProductRepository from '#repositories/product.repository'
 import UserRepository from '#repositories/user.repository'
 import ProductShopifyService from '#services/shopify/product.service'
@@ -17,7 +16,7 @@ export class ProductService {
     private userRepository: UserRepository,
     private storeUploadService: StoreUploadService,
     private stripeService: StripeService,
-    private priceRepository: PriceRepository,
+    // private priceRepository: PriceRepository,
     private shopifyProductService: ProductShopifyService
   ) {}
 
@@ -130,7 +129,7 @@ export class ProductService {
   }
 
   async paginate(payload: QueryProductDTO) {
-    const result = await this.priceRepository.paginate(payload)
+    const result = await this.productRepository.paginate(payload)
     return result
   }
 }
