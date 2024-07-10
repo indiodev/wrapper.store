@@ -15,4 +15,9 @@ export default class ShopifyController {
     })
     return response.ok(result)
   }
+
+  async showCredential({ response, auth }: HttpContext) {
+    const result = await this.shopifyService.showCredential(auth.user!.id)
+    return response.ok(result)
+  }
 }

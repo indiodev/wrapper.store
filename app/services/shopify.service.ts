@@ -33,4 +33,16 @@ export default class ShopifyService {
 
     return await this.shopifyCredentialRepository.create(payload)
   }
+
+  async showCredential(user_id: number) {
+    const user = await this.userRepository.findBy({ id: user_id })
+    if (!user)
+      throw new ApplicationException('Usário não encontrado', {
+        cause: 'User not found',
+        code: 'USER_NOT_FOUND',
+        status: 404,
+      })
+
+    return await this.shopifyCredentialRepository.findBy({ userId: user.id })
+  }
 }

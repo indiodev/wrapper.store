@@ -26,6 +26,11 @@ export default class StripeController {
     return response.ok(result)
   }
 
+  async showCredential({ response, auth }: HttpContext) {
+    const result = await this.stripeService.showCredential(auth.user!.id)
+    return response.ok(result)
+  }
+
   async createProduct({ request, response, auth }: HttpContext) {
     const payload = await request.validateUsing(CreateProductValidator)
     const result = await this.productService.stripe({
