@@ -1,4 +1,5 @@
 import { AuthService } from '#services/auth.service'
+import env from '#start/env'
 import { ShopifyCallbackValidator, ShopifyInstallValidator } from '#validators/shopify.validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
@@ -27,6 +28,6 @@ export default class AuthController {
   async shopifyCallback(ctx: HttpContext) {
     const payload = await ShopifyCallbackValidator.validate(ctx.request.qs())
     await this.authService.shopifyCallback(ctx, payload)
-    return ctx.response.redirect('/')
+    return ctx.response.redirect(`${env.get('DASHBOARD_APP_HOST')}/shopify-store`)
   }
 }

@@ -33,4 +33,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   STORE_SECRET_ACCESS_KEY: Env.schema.string(),
   STORE_DEFAULT_REGION: Env.schema.string(),
   STORE_BUCKET_NAME: Env.schema.string(),
+
+  DASHBOARD_APP_HOST: Env.schema.string({ format: 'host' }),
 })
