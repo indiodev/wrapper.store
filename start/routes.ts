@@ -10,6 +10,7 @@
 import router from '@adonisjs/core/services/router'
 
 import '#routes/auth.route'
+import '#routes/dashboard.route'
 import '#routes/product.route'
 import '#routes/shopify.route'
 import '#routes/store.route'

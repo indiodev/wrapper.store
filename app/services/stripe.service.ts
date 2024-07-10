@@ -112,6 +112,34 @@ export default class StripeService {
     )
   }
 
+  async getTotalProduct(payload: { secret_key: string }) {
+    const client = new Stripe(payload.secret_key!)
+
+    const prices = await client.products.list({})
+
+    return { total: prices.data.length }
+  }
+
+  async getTotalSales(payload: { secret_key: string }) {
+    const client = new Stripe(payload.secret_key!)
+
+    const balance = await client.balanceTransactions.list({})
+
+    return { balance: balance }
+  }
+
+  async getBalance(payload: { secret_key: string }) {
+    const client = new Stripe(payload.secret_key!)
+
+    const { available, pending } = await client.balance.retrieve()
+
+    const totalAvailable = available.map((item) => item.amount).reduce((a, b) => a - b, 0)
+
+    const totalPending = pending.map((item) => item.amount).reduce((a, b) => a + b, 0)
+
+    return { total: totalPending - totalAvailable }
+  }
+
   private async checkUserStripe(payload: { user_id: number }) {
     const user = await this.userRepository.findBy({ id: payload.user_id })
 
