@@ -1,19 +1,27 @@
 import ApplicationException from '#exceptions/application'
-import WrapperRepository from '#repositories/wrapper.repository'
+import ShopifyCredentialRepository from '#repositories/shopify.credential.repository'
+import StoreRepository from '#repositories/store.repository'
 import { LATEST_API_VERSION, shopifyApi } from '@shopify/shopify-api'
 import { restResources } from '@shopify/shopify-api/rest/admin/2024-07'
 
 export default class BaseShopifyService {
-  constructor(protected wrapperRepository: WrapperRepository) {}
+  constructor(
+    protected storeRepository: StoreRepository,
+    protected shopifyCredentialRepository: ShopifyCredentialRepository
+  ) {}
 
-  async initialize(wrapper_id: number) {
-    const wrapper = await this.wrapperRepository.findBy({ id: wrapper_id })
+  async initialize(store_id: number) {
+    const store = await this.storeRepository.findBy({ id: store_id })
 
-    if (!wrapper) throw new ApplicationException('Wrapper não encontrado', { status: 404 })
+    if (!store) throw new ApplicationException('Loja não encontrada', { status: 404 })
+
+    const credential = await this.shopifyCredentialRepository.findBy({ userId: store.userId })
+
+    if (!credential) throw new ApplicationException('Credencial não encontrada', { status: 404 })
 
     const shop = shopifyApi({
-      apiSecretKey: wrapper.secret_key,
-      apiKey: wrapper.public_key,
+      apiSecretKey: credential.secret_key,
+      apiKey: credential.client_id,
       scopes: ['write_products', 'read_products'],
       hostName: 'indio-wrapper-api-0e2cd9be1343.herokuapp.com',
       apiVersion: LATEST_API_VERSION,
@@ -24,7 +32,7 @@ export default class BaseShopifyService {
     return {
       shopify: shop,
       data: {
-        hostname: wrapper.hostname,
+        hostname: store.hostname,
       },
     }
   }

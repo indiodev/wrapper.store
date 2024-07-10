@@ -27,11 +27,11 @@ export default class extends BaseSchema {
         .onDelete('CASCADE')
 
       table
-        .integer('wrapper_id')
+        .integer('store_id')
         .nullable()
         .unsigned()
         .references('id')
-        .inTable('wrappers')
+        .inTable('stores')
         .onDelete('CASCADE')
 
       table.timestamp('created_at')

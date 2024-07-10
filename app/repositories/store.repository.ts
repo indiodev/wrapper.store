@@ -1,10 +1,10 @@
 import { Create, Find, Update, Where } from '#dto/type.dto'
 import ApplicationException from '#exceptions/application'
-import Model from '#models/wrapper.model'
+import Model from '#models/store.model'
 import stringHelpers from '@adonisjs/core/helpers/string'
 import database from '@adonisjs/lucid/services/db'
 
-export default class WrapperRepository {
+export default class StoreRepository {
   constructor() {}
 
   async create(payload: Create<typeof Model>) {
@@ -36,9 +36,13 @@ export default class WrapperRepository {
     if (keys.length === 1) {
       const [value] = Object.values(payload).map((item) => item !== null && item)
       const [key] = Object.keys(payload).map((k) => stringHelpers.snakeCase(k))
-      const wrapper = await Model?.query().where(key, value).preload('session').first()
-      if (!wrapper) return null
-      return wrapper
+      const store = await Model?.query()
+        .where(key, value)
+        .preload('session')
+        .preload('user')
+        .first()
+      if (!store) return null
+      return store
     }
 
     if (keys.length > 1 && !clause)
@@ -51,10 +55,14 @@ export default class WrapperRepository {
     const values = Object.values(payload).map((item) => item !== null && item)
 
     const raw = keys
-      .flatMap((key) => ` "wrappers"."${stringHelpers.snakeCase(key)}" = ? `)
+      .flatMap((key) => ` "stores"."${stringHelpers.snakeCase(key)}" = ? `)
       .join(` ${clause} `)
 
-    const user = await Model?.query().whereRaw(raw, values).preload('session').first()
+    const user = await Model?.query()
+      .whereRaw(raw, values)
+      .preload('session')
+      .preload('user')
+      .first()
     if (!user) return null
     return user
   }
@@ -62,7 +70,11 @@ export default class WrapperRepository {
   async paginate({ page = 1, per_page = 15, ...payload }: Where<typeof Model>) {
     return await database.transaction(async function (client) {
       return await Model.query({ client })
-        .if(payload.search, (query) => query.whereILike('hostname', `%${payload.search}%`))
+        .if(payload.search, (query) =>
+          query
+            .whereILike('hostname', `%${payload.search}%`)
+            .orWhereILike('name', `%${payload.search}%`)
+        )
         .paginate(page, per_page)
     })
   }

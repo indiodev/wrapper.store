@@ -1,30 +1,34 @@
 import { ShopifyCallbackDTO, ShopifyInstallDTO } from '#dto/shopify.dto'
 import ApplicationException from '#exceptions/application'
-import WrapperRepository from '#repositories/wrapper.repository'
+import ShopifyCredentialRepository from '#repositories/shopify.credential.repository'
+import StoreRepository from '#repositories/store.repository'
 import BaseShopifyService from '#services/shopify/base.service'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class AuthShopifyService extends BaseShopifyService {
-  constructor(protected wrapperRepository: WrapperRepository) {
-    super(wrapperRepository)
+  constructor(
+    protected storeRepository: StoreRepository,
+    protected shopifyCredentialRepository: ShopifyCredentialRepository
+  ) {
+    super(storeRepository, shopifyCredentialRepository)
   }
 
   async install(ctx: HttpContext, payload: ShopifyInstallDTO) {
     try {
-      const wrapper = await this.wrapperRepository.findBy({
+      const store = await this.storeRepository.findBy({
         hostname: payload.shop,
       })
 
-      if (!wrapper)
-        throw new ApplicationException('Wrapper não encontrado', {
+      if (!store)
+        throw new ApplicationException('store não encontrado', {
           status: 404,
-          cause: 'Wrapper not found',
-          code: 'WRAPPER_NOT_FOUND',
+          cause: 'store not found',
+          code: 'store_NOT_FOUND',
         })
 
-      const { shopify } = await this.initialize(wrapper?.id!)
+      const { shopify } = await this.initialize(store?.id!)
 
       await shopify.auth.begin({
         shop: payload.shop,
@@ -33,11 +37,6 @@ export default class AuthShopifyService extends BaseShopifyService {
         rawResponse: ctx.response.response,
         isOnline: false,
       })
-      // const STATE = randomBytes(16).toString('hex')
-
-      // const REDIRECT_URI = forwardingAddress + '/auth/shopify/callback'
-
-      // const INSTALL_URL = `https://${payload.shop}/admin/oauth/authorize?client_id=${shopify.config.apiKey}&scope=${shopify.config.scopes?.toString()}&state=${STATE}&redirect_uri=${REDIRECT_URI}`
     } catch (error) {
       console.error(error)
 
@@ -47,19 +46,19 @@ export default class AuthShopifyService extends BaseShopifyService {
 
   async callback(ctx: HttpContext, payload: ShopifyCallbackDTO) {
     try {
-      const wrapper = await this.wrapperRepository.findBy({
+      const store = await this.storeRepository.findBy({
         hostname: payload.shop,
       })
 
-      if (!wrapper) {
-        throw new ApplicationException('Wrapper não encontrado', {
+      if (!store) {
+        throw new ApplicationException('store não encontrado', {
           status: 404,
-          cause: 'Wrapper not found',
-          code: 'WRAPPER_NOT_FOUND',
+          cause: 'store not found',
+          code: 'store_NOT_FOUND',
         })
       }
 
-      const { shopify } = await this.initialize(wrapper.id)
+      const { shopify } = await this.initialize(store.id)
 
       const isValidHmac = await shopify.utils.validateHmac(payload)
 
@@ -76,7 +75,7 @@ export default class AuthShopifyService extends BaseShopifyService {
         rawResponse: ctx.response.response,
       })
 
-      await wrapper.related('session').create({
+      await store.related('session').create({
         shop: callback.session.shop,
         state: callback.session.state,
         access_token: callback.session.accessToken,

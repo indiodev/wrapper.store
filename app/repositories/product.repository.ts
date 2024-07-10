@@ -36,9 +36,9 @@ export default class ProductRepository {
     if (keys.length === 1) {
       const [value] = Object.values(payload).map((item) => item !== null && item)
       const [key] = Object.keys(payload).map((k) => stringHelpers.snakeCase(k))
-      const wrapper = await Model?.query().where(key, value).preload('prices').first()
-      if (!wrapper) return null
-      return wrapper
+      const product = await Model?.query().where(key, value).preload('prices').first()
+      if (!product) return null
+      return product
     }
 
     if (keys.length > 1 && !clause)

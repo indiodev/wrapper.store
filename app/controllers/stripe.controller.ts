@@ -1,13 +1,37 @@
-import ChargeStripeService from '#services/stripe/charge.service'
+import { ProductService } from '#services/product.service'
+import StripeService from '#services/stripe.service'
+import { CreateProductValidator } from '#validators/product.validator'
+import { StripeCreateCredentialValidator } from '#validators/stripe.validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class StripeController {
-  constructor(private chargeStripeService: ChargeStripeService) {}
+  constructor(
+    private stripeService: StripeService,
+    private productService: ProductService
+  ) {}
 
   async charges({ response, auth }: HttpContext) {
-    const result = await this.chargeStripeService.list({ user_id: auth.user!.id })
+    const result = await this.stripeService.charges({ user_id: auth.user!.id })
+    return response.ok(result)
+  }
+
+  async credential({ request, response, auth }: HttpContext) {
+    const payload = await request.validateUsing(StripeCreateCredentialValidator)
+    const result = await this.stripeService.credential({
+      ...payload,
+      user_id: auth.user!.id,
+    })
+    return response.ok(result)
+  }
+
+  async createProduct({ request, response, auth }: HttpContext) {
+    const payload = await request.validateUsing(CreateProductValidator)
+    const result = await this.productService.stripe({
+      ...payload,
+      user_id: auth.user?.id,
+    })
     return response.ok(result)
   }
 }

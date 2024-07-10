@@ -1,10 +1,11 @@
 import { Create, Find, Update, Where } from '#dto/type.dto'
 import ApplicationException from '#exceptions/application'
-import Model from '#models/user.model'
+import Model from '#models/stripe.credential.model'
+
 import stringHelpers from '@adonisjs/core/helpers/string'
 import database from '@adonisjs/lucid/services/db'
 
-export default class UserRepository {
+export default class StripeCredentialRepository {
   constructor() {}
 
   async create(payload: Create<typeof Model>) {
@@ -37,11 +38,7 @@ export default class UserRepository {
       if (keys.length === 1) {
         const [value] = Object.values(payload).map((item) => item !== null && item)
         const [key] = Object.keys(payload).map((k) => stringHelpers.snakeCase(k))
-        const user = await Model?.query({ client })
-          .where(key, value)
-          ?.preload('shopify')
-          ?.preload('stripe')
-          .first()
+        const user = await Model?.query({ client }).where(key, value).first()
         if (!user) return null
         return user
       }
@@ -55,27 +52,11 @@ export default class UserRepository {
 
       const values = Object.values(payload).map((item) => item !== null && item)
       const raw = keys
-        .flatMap((key) => ` "users"."${stringHelpers.snakeCase(key)}" = ? `)
+        .flatMap((key) => ` "stripe_credential"."${stringHelpers.snakeCase(key)}" = ? `)
         .join(` ${clause} `)
-      const user = await Model?.query({ client })
-        .whereRaw(raw, values)
-        ?.preload('shopify')
-        ?.preload('stripe')
-        .first()
+      const user = await Model?.query({ client }).whereRaw(raw, values).first()
       if (!user) return null
       return user
-    })
-  }
-
-  async paginate({ page = 1, per_page = 15, ...payload }: Where<typeof Model>) {
-    return await database.transaction(async function (client) {
-      return await Model.query({ client })
-        .if(payload.search, (query) =>
-          query
-            .whereILike('name', `%${payload.search}%`)
-            .orWhereILike('email', `%${payload.search}%`)
-        )
-        .paginate(page, per_page)
     })
   }
 }

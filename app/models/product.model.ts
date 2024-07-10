@@ -1,6 +1,7 @@
 import BaseSerialModel from '#models/base.model'
+import Store from '#models/store.model'
+
 import User from '#models/user.model'
-import Wrapper from '#models/wrapper.model'
 import { Provider } from '#util/enum'
 import { belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
@@ -39,11 +40,11 @@ export default class Product extends BaseSerialModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
-  @column({ columnName: 'wrapper_id', serializeAs: 'wrapper_id' })
-  declare wrapperId: number | null
+  @column({ columnName: 'store_id', serializeAs: 'store_id' })
+  declare storeId: number | null
 
-  @belongsTo(() => Wrapper)
-  declare wrapper: BelongsTo<typeof Wrapper>
+  @belongsTo(() => Store)
+  declare store: BelongsTo<typeof Store>
 
   @hasMany(() => PriceModel)
   declare prices: HasMany<typeof PriceModel>

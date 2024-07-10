@@ -28,18 +28,18 @@ export default class UserService {
         status: 404,
       })
 
-    if (
-      payload.stripe_public_key === user.stripe_public_key ||
-      payload.stripe_secret_key === user.stripe_secret_key
-    )
-      throw new ApplicationException(
-        'Public key ou Secret key não podem ser iguais aos anteriores',
-        {
-          cause: 'Public key or secret key cannot be the same as the previous ones',
-          code: 'PUBLIC_KEY_OR_SECRET_KEY_CANNOT_BE_THE_SAME_AS_THE_PREVIOUS_ONES',
-          status: 400,
-        }
-      )
+    // if (
+    //   payload.stripe_public_key === user.stripe_public_key ||
+    //   payload.stripe_secret_key === user.stripe_secret_key
+    // )
+    //   throw new ApplicationException(
+    //     'Public key ou Secret key não podem ser iguais aos anteriores',
+    //     {
+    //       cause: 'Public key or secret key cannot be the same as the previous ones',
+    //       code: 'PUBLIC_KEY_OR_SECRET_KEY_CANNOT_BE_THE_SAME_AS_THE_PREVIOUS_ONES',
+    //       status: 400,
+    //     }
+    //   )
 
     return await this.userRepository.update(payload)
   }

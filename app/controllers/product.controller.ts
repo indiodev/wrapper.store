@@ -11,15 +11,6 @@ import { HttpContext } from '@adonisjs/core/http'
 export default class ProductController {
   constructor(private productService: ProductService) {}
 
-  async stripe({ request, response, auth }: HttpContext) {
-    const payload = await request.validateUsing(CreateProductValidator)
-    const result = await this.productService.stripe({
-      ...payload,
-      user_id: auth.user?.id,
-    })
-    return response.ok(result)
-  }
-
   async shopify(ctx: HttpContext) {
     const payload = await ctx.request.validateUsing(CreateProductValidator)
     const result = await this.productService.shopify({

@@ -14,10 +14,10 @@ export default class extends BaseSchema {
       table.string('expires').nullable()
 
       table
-        .integer('wrapper_id')
+        .integer('store_id')
         .unsigned()
         .references('id')
-        .inTable('wrappers')
+        .inTable('stores')
         .onDelete('CASCADE')
         .notNullable()
     })

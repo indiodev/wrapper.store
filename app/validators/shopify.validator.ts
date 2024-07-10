@@ -13,5 +13,12 @@ export const ShopifyCallbackSchema = vine.object({
   timestamp: vine.string().trim(),
 })
 
+export const ShopifyCreateCredentialSchema = vine.object({
+  secret_key: vine.string().trim(),
+  client_id: vine.string().trim(),
+  user_id: vine.number().positive().optional(),
+})
+
 export const ShopifyInstallValidator = vine.compile(ShopifyInstallSchema)
 export const ShopifyCallbackValidator = vine.compile(ShopifyCallbackSchema)
+export const ShopifyCreateCredentialValidator = vine.compile(ShopifyCreateCredentialSchema)

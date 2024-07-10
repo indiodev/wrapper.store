@@ -8,7 +8,7 @@ export const CreateProductSchema = vine.object({
   quantity: vine.number(),
   photo: vine.file(),
   currencies: vine.array(vine.enum(['USD', 'BRL', 'EUR', 'GBP'])),
-  wrapper_id: vine.number().positive().optional(),
+  store_id: vine.number().positive().optional(),
   user_id: vine.number().positive().optional(),
 })
 
@@ -20,7 +20,7 @@ export const UpdateProductSchema = vine.object({
   quantity: vine.number().optional(),
   photo: vine.file().optional(),
   currencies: vine.array(vine.enum(['USD', 'BRL', 'EUR', 'GBP'])).optional(),
-  wrapper_id: vine.number().positive().optional(),
+  store_id: vine.number().positive().optional(),
   user_id: vine.number().positive().optional(),
 })
 

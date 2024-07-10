@@ -11,9 +11,10 @@ import router from '@adonisjs/core/services/router'
 
 import '#routes/auth.route'
 import '#routes/product.route'
+import '#routes/shopify.route'
+import '#routes/store.route'
 import '#routes/stripe.route'
 import '#routes/user.route'
-import '#routes/wrapper.route'
 
 router.get('/', async () => {
   return {

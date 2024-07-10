@@ -1,41 +1,59 @@
-// import { S3Disk } from '#utils/s3.disk'
-import env from '#start/env'
-import { MultipartFile } from '@adonisjs/core/bodyparser'
-import { Disk } from 'flydrive'
-import { S3Driver } from 'flydrive/drivers/s3'
-import { randomUUID } from 'node:crypto'
-import { createReadStream } from 'node:fs'
+import { CreateStoreDTO, QueryStoreDTO, UpdateStoreDTO } from '#dto/store.dto'
+import ApplicationException from '#exceptions/application'
+import StoreRepository from '#repositories/store.repository'
+import { inject } from '@adonisjs/core'
 
-export const S3Disk = new Disk(
-  new S3Driver({
-    credentials: {
-      accessKeyId: env.get('STORE_ACCESS_KEY_ID'),
-      secretAccessKey: env.get('STORE_SECRET_ACCESS_KEY'),
-    },
-    region: env.get('STORE_DEFAULT_REGION'),
-    bucket: env.get('STORE_BUCKET_NAME'),
-    visibility: 'public',
-  })
-)
-
+@inject()
 export class StoreService {
-  constructor(private storage = S3Disk) {}
+  constructor(private storeRepository: StoreRepository) {}
 
-  async upload(
-    payload: { file: MultipartFile; identifier: string }[],
-    pathname: string
-  ): Promise<{ url: string; identifier: string }[]> {
-    if (payload?.length === 0) return []
+  async create(payload: CreateStoreDTO) {
+    const store = await this.storeRepository.findBy({
+      hostname: payload.hostname,
+    })
 
-    const locations: { url: string; identifier: string }[] = []
+    if (store)
+      throw new ApplicationException('Loja já existe', {
+        status: 400,
+        code: 'STORE_ALREADY_EXISTS',
+        cause: 'Store already exists',
+      })
+    const result = await this.storeRepository.create(payload)
 
-    for (const { file, identifier } of payload) {
-      const filename = `${pathname}/${randomUUID()}.${file.extname}`
-      await this.storage.putStream(filename, createReadStream(file.tmpPath!))
-      const url = await this.storage.getUrl(filename)
-      locations.push({ url, identifier })
-    }
+    return result.toJSON()
+  }
 
-    return locations
+  async update(payload: UpdateStoreDTO) {
+    const store = await this.storeRepository.findBy({
+      id: payload.id,
+      userId: payload.user_id,
+      clause: 'AND',
+    })
+
+    if (!store)
+      throw new ApplicationException('Loja não encontrado', {
+        status: 404,
+        code: 'STORE_NOT_FOUND',
+        cause: 'Store not found',
+      })
+
+    const result = await this.storeRepository.update(payload)
+    return result.toJSON()
+  }
+
+  async show(id: number) {
+    const result = await this.storeRepository.findBy({ id })
+    if (!result)
+      throw new ApplicationException('store não encontrado', {
+        cause: 'store not found',
+        code: 'store_NOT_FOUND',
+        status: 404,
+      })
+    return result.toJSON()
+  }
+
+  async paginate(payload: QueryStoreDTO) {
+    const result = await this.storeRepository.paginate(payload)
+    return result
   }
 }

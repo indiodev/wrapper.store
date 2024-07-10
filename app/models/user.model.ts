@@ -1,11 +1,12 @@
 import BaseSerialModel from '#models/base.model'
-import Wrapper from '#models/wrapper.model'
+import ShopifyCredential from '#models/shopify.credential.model'
+import StripeCredential from '#models/stripe.credential.model'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { compose } from '@adonisjs/core/helpers'
 import hash from '@adonisjs/core/services/hash'
-import { column, hasMany } from '@adonisjs/lucid/orm'
-import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { column, hasOne } from '@adonisjs/lucid/orm'
+import type { HasOne } from '@adonisjs/lucid/types/relations'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -24,26 +25,11 @@ export default class User extends compose(BaseSerialModel, AuthFinder) {
   @column({ serializeAs: null })
   declare password: string
 
-  @column({
-    columnName: 'stripe_secret_key',
-    serializeAs: 'stripe_secret_key',
-  })
-  declare stripe_secret_key: string | null
+  @hasOne(() => StripeCredential)
+  declare stripe: HasOne<typeof StripeCredential>
 
-  @column({
-    columnName: 'stripe_public_key',
-    serializeAs: 'stripe_public_key',
-  })
-  declare stripe_public_key: string | null
-
-  @column({
-    columnName: 'shopify_access_token',
-    serializeAs: 'shopify_access_token',
-  })
-  declare shopify_access_token: string | null
-
-  @hasMany(() => Wrapper)
-  declare wrappers: HasMany<typeof Wrapper>
+  @hasOne(() => ShopifyCredential)
+  declare shopify: HasOne<typeof ShopifyCredential>
 
   static tokens = DbAccessTokensProvider.forModel(User)
 }

@@ -1,4 +1,4 @@
-import Wrapper from '#models/wrapper.model'
+import Store from '#models/store.model'
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
@@ -27,11 +27,11 @@ export default class ShopifySession extends BaseModel {
   declare expires: Date | null
 
   @column({
-    serializeAs: 'wrapper_id',
-    columnName: 'wrapper_id',
+    serializeAs: 'store_id',
+    columnName: 'store_id',
   })
-  declare wrapperId: number
+  declare storeId: number
 
-  @belongsTo(() => Wrapper)
-  declare wrapper: BelongsTo<typeof Wrapper>
+  @belongsTo(() => Store)
+  declare store: BelongsTo<typeof Store>
 }

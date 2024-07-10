@@ -1,28 +1,27 @@
 import { CreateProductDTO, QueryProductDTO } from '#dto/product.dto'
 import ApplicationException from '#exceptions/application'
+import PriceRepository from '#repositories/price.repository'
 import ProductRepository from '#repositories/product.repository'
 import UserRepository from '#repositories/user.repository'
 import ProductShopifyService from '#services/shopify/product.service'
-import { StoreService } from '#services/store.service'
-import PaymentLinkStripeService from '#services/stripe/payment.link.service'
-import PriceStripeService from '#services/stripe/price.service'
-import ProductStripeService from '#services/stripe/product.service'
+
+import StripeService from '#services/stripe.service'
 import { Provider } from '#util/enum'
 import { inject } from '@adonisjs/core'
+import { StoreUploadService } from './store.upload.service.js'
 
 @inject()
 export class ProductService {
   constructor(
     private productRepository: ProductRepository,
     private userRepository: UserRepository,
-    private storeService: StoreService,
-    private stripeProductService: ProductStripeService,
-    private stripePriceService: PriceStripeService,
-    private stripePaymentLinkService: PaymentLinkStripeService,
+    private storeUploadService: StoreUploadService,
+    private stripeService: StripeService,
+    private priceRepository: PriceRepository,
     private shopifyProductService: ProductShopifyService
   ) {}
 
-  async stripe({ currencies, photo, wrapper_id, user_id, ...payload }: CreateProductDTO) {
+  async stripe({ currencies, photo, store_id, user_id, ...payload }: CreateProductDTO) {
     const user = await this.userRepository.findBy({ id: user_id })
 
     if (!user) {
@@ -32,7 +31,16 @@ export class ProductService {
         status: 404,
       })
     }
-    const [store] = await this.storeService.upload(
+
+    if (user?.stripe?.secret_key === null || user?.stripe?.publishable_key === null) {
+      throw new ApplicationException('Chave publica e privada não encontrada', {
+        cause: 'Public key or secret key not found',
+        code: 'PUBLIC_KEY_OR_SECRET_KEY_NOT_FOUND',
+        status: 404,
+      })
+    }
+
+    const [store] = await this.storeUploadService.upload(
       [{ file: photo, identifier: 'photo' }],
       'products'
     )
@@ -46,35 +54,30 @@ export class ProductService {
 
     await created.related('user').associate(user)
 
-    const stripe = await this.stripeProductService.create({
+    const product = await this.stripeService.createProduct({
       name: created.name,
       description: created.description,
       photo: created.photo,
       user_id,
       id: created.id,
+      secret_key: user?.stripe?.secret_key,
     })
 
-    const prices = await this.stripePriceService.create({
+    await this.stripeService.createPrice({
       currencies,
       price: created.price,
-      id: stripe.id,
+      id: product.id,
       user_id,
-      stripe_product_id: stripe.stripe_product_id!,
+      stripe_product_id: product.stripe_product_id!,
+      secret_key: user?.stripe?.secret_key,
     })
 
-    await this.stripePaymentLinkService.create({
-      user_id,
-      prices: prices.map((price) => ({
-        id: price.id,
-        currency: price.currency,
-        stripe_price_id: price.stripe_price_id!,
-      })),
-    })
+    await created.load('prices')
 
     return created.toJSON()
   }
 
-  async shopify({ currencies, photo, wrapper_id, user_id, ...payload }: CreateProductDTO) {
+  async shopify({ currencies, photo, store_id, user_id, ...payload }: CreateProductDTO) {
     const user = await this.userRepository.findBy({ id: user_id })
 
     if (!user) {
@@ -84,7 +87,7 @@ export class ProductService {
         status: 404,
       })
     }
-    const [store] = await this.storeService.upload(
+    const [store] = await this.storeUploadService.upload(
       [{ file: photo, identifier: 'photo' }],
       'products'
     )
@@ -100,7 +103,7 @@ export class ProductService {
 
     const shopify = await this.shopifyProductService.create({
       ...payload,
-      wrapper_id: wrapper_id!,
+      store_id: store_id!,
       id: created.id,
       photo: store.url,
     })
@@ -127,7 +130,7 @@ export class ProductService {
   }
 
   async paginate(payload: QueryProductDTO) {
-    const result = await this.productRepository.paginate(payload)
+    const result = await this.priceRepository.paginate(payload)
     return result
   }
 }

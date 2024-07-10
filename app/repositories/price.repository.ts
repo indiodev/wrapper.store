@@ -48,9 +48,9 @@ export default class PriceRepository {
     if (keys.length === 1) {
       const [value] = Object.values(payload).map((item) => item !== null && item)
       const [key] = Object.keys(payload).map((k) => stringHelpers.snakeCase(k))
-      const wrapper = await Model?.query().where(key, value).first()
-      if (!wrapper) return null
-      return wrapper
+      const price = await Model?.query().where(key, value).first()
+      if (!price) return null
+      return price
     }
 
     if (keys.length > 1 && !clause)
@@ -75,6 +75,18 @@ export default class PriceRepository {
     return await database.transaction(async function (client) {
       return await Model.query({ client })
         .if(payload.search, (query) => query.whereILike('currency', `%${payload.search}%`))
+        ?.preload('product', (product) =>
+          product.select([
+            'id',
+            'name',
+            'price',
+            'photo',
+            'provider',
+            'user_id',
+            'stripe_product_id',
+            'shopify_product_id',
+          ])
+        )
         .paginate(page, per_page)
     })
   }
