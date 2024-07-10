@@ -44,6 +44,14 @@ export class DashboardService {
       secret_key: user?.stripe?.secret_key,
     })
 
-    return { product: totalProduct, balance: totalBalance, sales: totalSales }
+    return {
+      product: totalProduct,
+      balance: totalBalance,
+      sales: totalSales,
+      user: {
+        id: user.id,
+        name: user.name,
+      },
+    }
   }
 }
