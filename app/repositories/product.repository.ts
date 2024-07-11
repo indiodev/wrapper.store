@@ -67,6 +67,7 @@ export default class ProductRepository {
             .whereILike('name', `%${payload.search}%`)
             .orWhereILike('provider', `%${payload.search}%`)
         )
+        .preload('prices', (p) => p.select(['id', 'currency', 'stripe_price_id', 'product_id']))
         .paginate(page, per_page)
     })
   }
