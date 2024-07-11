@@ -1,8 +1,8 @@
-import { ParamsProductDTO } from '#dto/product.dto'
 import {
   CreateStripePriceDTO,
   CreateStripeProductDTO,
   StripeCreateCredentialDTO,
+  StripeQueryCheckoutDTO,
 } from '#dto/stripe.dto'
 import ApplicationException from '#exceptions/application'
 import PriceRepository from '#repositories/price.repository'
@@ -113,8 +113,8 @@ export default class StripeService {
     )
   }
 
-  async checkoutProduct(payload: ParamsProductDTO) {
-    const product = await this.productRepository.findBy({ id: payload.id })
+  async checkoutProduct(payload: StripeQueryCheckoutDTO) {
+    const product = await this.productRepository.findBy({ stripe_product_id: payload.price_id })
 
     if (!product)
       throw new ApplicationException('Produto não encontrado', {
@@ -143,7 +143,7 @@ export default class StripeService {
       success_url: 'http://localhost:3000/products',
       line_items: [
         {
-          price: product?.prices?.[0]?.stripe_price_id!,
+          price: payload.price_id,
           quantity: 1,
         },
       ],
@@ -175,7 +175,6 @@ export default class StripeService {
 
     return {
       total,
-      // totalItems: balance.data.length
     }
   }
 

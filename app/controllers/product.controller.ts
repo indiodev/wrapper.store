@@ -2,7 +2,6 @@ import { ProductService } from '#services/product.service'
 import StripeService from '#services/stripe.service'
 import {
   CreateProductValidator,
-  ParamsProductValidator,
   QueryProductValidator,
   UpdateProductValidator,
 } from '#validators/product.validator'
@@ -35,11 +34,5 @@ export default class ProductController {
     const payload = await QueryProductValidator.validate(request.qs())
     const result = await this.productService.paginate(payload)
     return response.ok(result)
-  }
-
-  async checkout({ request, response }: HttpContext) {
-    const payload = await ParamsProductValidator.validate(request.params())
-    const { url } = await this.stripeService.checkoutProduct(payload)
-    return response.redirect(url!)
   }
 }

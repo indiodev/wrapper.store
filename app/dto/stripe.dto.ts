@@ -1,6 +1,9 @@
 import { Create } from '#dto/type.dto'
 import ProductModel from '#models/product.model'
-import { StripeCreateCredentialSchema } from '#validators/stripe.validator'
+import {
+  StripeCreateCredentialSchema,
+  StripeQueryCheckoutSchema,
+} from '#validators/stripe.validator'
 import { Infer } from '@vinejs/vine/types'
 
 export type CreateStripeProductDTO = Pick<
@@ -27,3 +30,4 @@ export type CreateStripePaymentLinkDTO = {
 }
 
 export type StripeCreateCredentialDTO = Infer<typeof StripeCreateCredentialSchema>
+export type StripeQueryCheckoutDTO = Infer<typeof StripeQueryCheckoutSchema>

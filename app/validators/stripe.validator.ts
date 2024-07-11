@@ -7,3 +7,8 @@ export const StripeCreateCredentialSchema = vine.object({
 })
 
 export const StripeCreateCredentialValidator = vine.compile(StripeCreateCredentialSchema)
+
+export const StripeQueryCheckoutSchema = vine.object({
+  price_id: vine.string().trim(),
+})
+export const StripeQueryCheckoutValidator = vine.compile(StripeQueryCheckoutSchema)

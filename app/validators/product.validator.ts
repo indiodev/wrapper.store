@@ -24,11 +24,6 @@ export const UpdateProductSchema = vine.object({
   user_id: vine.number().positive().optional(),
 })
 
-export const ParamsProductSchema = vine.object({
-  id: vine.number().positive(),
-})
-
 export const CreateProductValidator = vine.compile(CreateProductSchema)
 export const UpdateProductValidator = vine.compile(UpdateProductSchema)
 export const QueryProductValidator = vine.compile(QueryBaseSchema)
-export const ParamsProductValidator = vine.compile(ParamsProductSchema)

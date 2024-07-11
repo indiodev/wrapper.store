@@ -1,7 +1,10 @@
 import { ProductService } from '#services/product.service'
 import StripeService from '#services/stripe.service'
 import { CreateProductValidator } from '#validators/product.validator'
-import { StripeCreateCredentialValidator } from '#validators/stripe.validator'
+import {
+  StripeCreateCredentialValidator,
+  StripeQueryCheckoutValidator,
+} from '#validators/stripe.validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
 
@@ -38,5 +41,11 @@ export default class StripeController {
       user_id: auth.user?.id,
     })
     return response.ok(result)
+  }
+
+  async checkout({ request, response }: HttpContext) {
+    const payload = await StripeQueryCheckoutValidator.validate(request.qs())
+    const { url } = await this.stripeService.checkoutProduct(payload)
+    return response.redirect(url!)
   }
 }
