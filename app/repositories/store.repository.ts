@@ -78,4 +78,8 @@ export default class StoreRepository {
         .paginate(page, per_page)
     })
   }
+
+  async list() {
+    return await Model.all()
+  }
 }

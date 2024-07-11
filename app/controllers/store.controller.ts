@@ -42,4 +42,9 @@ export default class StoreController {
     const result = await this.storeService.paginate(payload)
     return response.ok(result)
   }
+
+  async list({ response }: HttpContext) {
+    const result = await this.storeService.list()
+    return response.ok(result)
+  }
 }

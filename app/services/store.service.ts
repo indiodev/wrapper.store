@@ -56,4 +56,9 @@ export class StoreService {
     const result = await this.storeRepository.paginate(payload)
     return result
   }
+
+  async list() {
+    const result = await this.storeRepository.list()
+    return result
+  }
 }
