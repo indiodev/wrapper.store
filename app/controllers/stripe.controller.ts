@@ -35,6 +35,7 @@ export default class StripeController {
   }
 
   async createProduct({ request, response, auth }: HttpContext) {
+    console.log('FILE STRIPE', request.file('photo'))
     const payload = await request.validateUsing(CreateProductValidator)
     const result = await this.productService.stripe({
       ...payload,
