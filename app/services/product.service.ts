@@ -39,7 +39,7 @@ export class ProductService {
     }
 
     const [store] = await this.storeUploadService.upload(
-      [{ file: photo, identifier: 'photo' }],
+      [{ file: photo!, identifier: 'photo' }],
       'products'
     )
 
@@ -86,7 +86,7 @@ export class ProductService {
       })
     }
     const [store] = await this.storeUploadService.upload(
-      [{ file: photo, identifier: 'photo' }],
+      [{ file: photo!, identifier: 'photo' }],
       'products'
     )
 
