@@ -1,6 +1,7 @@
 import ApplicationException from '#exceptions/application'
 import ShopifyCredentialRepository from '#repositories/shopify.credential.repository'
 import StoreRepository from '#repositories/store.repository'
+import env from '#start/env'
 import { LATEST_API_VERSION, shopifyApi } from '@shopify/shopify-api'
 import { restResources } from '@shopify/shopify-api/rest/admin/2024-07'
 
@@ -23,7 +24,7 @@ export default class BaseShopifyService {
       apiSecretKey: credential.secret_key,
       apiKey: credential.client_id,
       scopes: ['write_products', 'read_products'],
-      hostName: 'indio-wrapper-api-0e2cd9be1343.herokuapp.com',
+      hostName: env.get('API_APP_HOST'),
       apiVersion: LATEST_API_VERSION,
       isEmbeddedApp: false,
       restResources,
