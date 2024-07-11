@@ -115,7 +115,7 @@ export default class StripeService {
   async checkoutProduct(payload: StripeQueryCheckoutDTO) {
     const price = await this.priceRepository.findBy({
       stripe_price_id: payload.price_id,
-      id: Number(payload.price_id!),
+      id: +payload.price_id,
       clause: 'OR',
     })
 
