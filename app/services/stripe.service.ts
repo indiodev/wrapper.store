@@ -158,7 +158,7 @@ export default class StripeService {
 
       const { url } = await client.checkout.sessions.create({
         mode: 'payment',
-        success_url: `${env.get('DASHBOARD_APP_HOST')}/products`,
+        success_url: `https://${env.get('DASHBOARD_APP_HOST')}/products`,
         line_items: [
           {
             price: _price.id,
@@ -172,7 +172,7 @@ export default class StripeService {
 
     const { url } = await client.checkout.sessions.create({
       mode: 'payment',
-      success_url: `${env.get('DASHBOARD_APP_HOST')}/products`,
+      success_url: `https://${env.get('DASHBOARD_APP_HOST')}/products`,
       line_items: [
         {
           price: payload.price_id,
