@@ -68,7 +68,7 @@ export default class StripeService {
           status: charge.status,
           billing_email: charge.billing_details.email,
           billing_name: charge.billing_details.name,
-          product_name: product?.name,
+          product_name: product?.name ?? null,
           created_at: new Date(charge.created * 1000),
         }
       })
