@@ -13,10 +13,10 @@ export default class ShopifyController {
   ) {}
 
   async createProduct(ctx: HttpContext) {
-    console.log('FILE SHOPIFY', ctx.request.file('photo'))
     const payload = await ctx.request.validateUsing(CreateProductValidator)
     const result = await this.productService.shopify({
       ...payload,
+      photo: ctx.request.file('photo')!,
       user_id: ctx.auth.user?.id,
     })
     return ctx.response.ok(result)
