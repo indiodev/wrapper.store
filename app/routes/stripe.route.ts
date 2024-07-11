@@ -6,13 +6,18 @@ export const StripeRoute = router
   .group(function () {
     router
       .group(function () {
-        router.post('/', [StripeController, 'credential'])
-        router.get('/', [StripeController, 'showCredential'])
+        router
+          .group(function () {
+            router.post('/', [StripeController, 'credential'])
+            router.get('/', [StripeController, 'showCredential'])
+          })
+          .prefix('credential')
+
+        router.get('charges', [StripeController, 'charges'])
+        router.post('/create-product', [StripeController, 'createProduct'])
       })
-      .prefix('credential')
-    router.get('charges', [StripeController, 'charges'])
-    router.post('/create-product', [StripeController, 'createProduct'])
+      .middleware(middleware.auth())
+
     router.get('/checkout', [StripeController, 'checkout'])
   })
   .prefix('stripe')
-  .middleware(middleware.auth())
