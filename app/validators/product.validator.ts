@@ -6,7 +6,7 @@ export const CreateProductSchema = vine.object({
   description: vine.string(),
   price: vine.number(),
   quantity: vine.number(),
-  photo: vine.file().optional(),
+  photo: vine.file(),
   currencies: vine.array(vine.enum(['USD', 'BRL', 'EUR', 'GBP'])),
   store_id: vine.number().positive().optional(),
   user_id: vine.number().positive().optional(),

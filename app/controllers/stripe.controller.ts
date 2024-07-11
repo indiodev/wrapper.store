@@ -38,7 +38,6 @@ export default class StripeController {
     const payload = await request.validateUsing(CreateProductValidator)
     const result = await this.productService.stripe({
       ...payload,
-      photo: request.file('photo')!,
       user_id: auth.user?.id,
     })
     return response.ok(result)

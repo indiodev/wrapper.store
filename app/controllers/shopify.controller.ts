@@ -16,7 +16,6 @@ export default class ShopifyController {
     const payload = await ctx.request.validateUsing(CreateProductValidator)
     const result = await this.productService.shopify({
       ...payload,
-      photo: ctx.request.file('photo')!,
       user_id: ctx.auth.user?.id,
     })
     return ctx.response.ok(result)
