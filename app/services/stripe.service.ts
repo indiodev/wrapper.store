@@ -9,6 +9,7 @@ import PriceRepository from '#repositories/price.repository'
 import ProductRepository from '#repositories/product.repository'
 import StripeCredentialRepository from '#repositories/stripe.credential.repository'
 import UserRepository from '#repositories/user.repository'
+import env from '#start/env'
 import { Provider } from '#util/enum'
 import { inject } from '@adonisjs/core'
 import Stripe from 'stripe'
@@ -157,7 +158,7 @@ export default class StripeService {
 
       const { url } = await client.checkout.sessions.create({
         mode: 'payment',
-        success_url: 'http://localhost:3000/products',
+        success_url: `${env.get('DASHBOARD_APP_HOST')}/products`,
         line_items: [
           {
             price: _price.id,
@@ -171,7 +172,7 @@ export default class StripeService {
 
     const { url } = await client.checkout.sessions.create({
       mode: 'payment',
-      success_url: 'http://localhost:3000/products',
+      success_url: `${env.get('DASHBOARD_APP_HOST')}/products`,
       line_items: [
         {
           price: payload.price_id,
