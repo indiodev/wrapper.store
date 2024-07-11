@@ -6,7 +6,6 @@ export const ProductRoute = router
   .group(function () {
     router
       .group(function () {
-        router.post('/shopify', [ProductController, 'shopify'])
         router.get('/paginate', [ProductController, 'paginate'])
       })
       .middleware(middleware.auth())

@@ -9,6 +9,7 @@ import PriceRepository from '#repositories/price.repository'
 import ProductRepository from '#repositories/product.repository'
 import StripeCredentialRepository from '#repositories/stripe.credential.repository'
 import UserRepository from '#repositories/user.repository'
+import { Provider } from '#util/enum'
 import { inject } from '@adonisjs/core'
 import Stripe from 'stripe'
 
@@ -112,7 +113,11 @@ export default class StripeService {
   }
 
   async checkoutProduct(payload: StripeQueryCheckoutDTO) {
-    const price = await this.priceRepository.findBy({ stripe_price_id: payload.price_id })
+    const price = await this.priceRepository.findBy({
+      stripe_price_id: payload.price_id,
+      id: Number(payload.price_id!),
+      clause: 'OR',
+    })
 
     if (!price)
       throw new ApplicationException('Preço não encontrado', {
@@ -137,6 +142,33 @@ export default class StripeService {
       })
 
     const client = new Stripe(price?.product?.user?.stripe?.secret_key)
+
+    if (price?.product?.provider === Provider.SHOPIFY) {
+      const product = await client.products.create({
+        name: price?.product?.name,
+        description: price?.product?.description,
+        images: [price?.product?.photo],
+      })
+
+      const _price = await client.prices.create({
+        currency: price?.currency,
+        product: product.id,
+        unit_amount: price?.product?.price * 100,
+      })
+
+      const { url } = await client.checkout.sessions.create({
+        mode: 'payment',
+        success_url: 'http://localhost:3000/products',
+        line_items: [
+          {
+            price: _price.id,
+            quantity: 1,
+          },
+        ],
+      })
+
+      return { url }
+    }
 
     const { url } = await client.checkout.sessions.create({
       mode: 'payment',

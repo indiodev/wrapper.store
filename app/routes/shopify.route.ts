@@ -10,6 +10,8 @@ export const ShopifyRoute = router
         router.get('/', [ShopifyController, 'showCredential'])
       })
       .prefix('credential')
+
+    router.post('/create-product', [ShopifyController, 'createProduct'])
   })
   .prefix('shopify')
   .middleware(middleware.auth())

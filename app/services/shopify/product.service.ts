@@ -1,5 +1,6 @@
 import { UpdateProductDTO } from '#dto/product.dto'
 import ApplicationException from '#exceptions/application'
+import Store from '#models/store.model'
 import ProductRepository from '#repositories/product.repository'
 import ShopifyCredentialRepository from '#repositories/shopify.credential.repository'
 import StoreRepository from '#repositories/store.repository'
@@ -35,15 +36,7 @@ export default class ProductShopifyService extends BaseShopifyService {
     }
     const { shopify } = await this.initialize(store_id)
 
-    const session = new Session({
-      id: store.session.id,
-      accessToken: store.session.access_token,
-      shop: store.session.shop,
-      state: store.session.state,
-      isOnline: store.session.is_online,
-      scope: store.session.scope,
-      expires: new Date(store.session.expires!),
-    })
+    const session = this.getSession(store)
 
     const product = new shopify.rest.Product({ session: session })
 
@@ -70,6 +63,18 @@ export default class ProductShopifyService extends BaseShopifyService {
     return await this.productRepository.update({
       id: payload.id!,
       shopify_product_id: String(product.id),
+    })
+  }
+
+  private getSession(store: Store) {
+    return new Session({
+      id: store.session.id,
+      accessToken: store.session.access_token,
+      shop: store.session.shop,
+      state: store.session.state,
+      isOnline: store.session.is_online,
+      scope: store.session.scope,
+      expires: new Date(store.session.expires!),
     })
   }
 }
