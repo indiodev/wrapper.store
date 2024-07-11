@@ -114,29 +114,31 @@ export default class StripeService {
   }
 
   async checkoutProduct(payload: StripeQueryCheckoutDTO) {
-    const product = await this.productRepository.findBy({ stripe_product_id: payload.price_id })
+    const price = await this.priceRepository.findBy({ stripe_price_id: payload.price_id })
 
-    if (!product)
-      throw new ApplicationException('Produto não encontrado', {
-        cause: 'Product not found',
-        code: 'PRODUCT_NOT_FOUND',
+    if (!price)
+      throw new ApplicationException('Preço não encontrado', {
+        cause: 'Price not found',
+        code: 'Price_NOT_FOUND',
         status: 404,
       })
 
-    await product.load('user', (u) =>
-      u
-        .select(['id'])
-        .preload('stripe', (s) => s.select(['secret_key', 'id', 'publishable_key', 'user_id']))
+    await price.load('product', (p) =>
+      p.preload('user', (u) =>
+        u
+          .select(['id'])
+          .preload('stripe', (s) => s.select(['secret_key', 'id', 'publishable_key', 'user_id']))
+      )
     )
 
-    if (!product?.user?.stripe?.secret_key || !product?.user?.stripe?.publishable_key)
+    if (!price?.product?.user?.stripe?.secret_key || !price?.product?.user?.stripe?.publishable_key)
       throw new ApplicationException('Chave publica e privada não existem', {
         status: 404,
         cause: 'Public key and secret key not found',
         code: 'PUBLIC_KEY_AND_SECRET_KEY_NOT_FOUND',
       })
 
-    const client = new Stripe(product.user.stripe.secret_key)
+    const client = new Stripe(price?.product?.user?.stripe?.secret_key)
 
     const { url } = await client.checkout.sessions.create({
       mode: 'payment',
