@@ -13,7 +13,6 @@ export const ProductRoute = router
 
     router
       .group(function () {
-        router.get('/checkout', [ProductController, 'checkout'])
         router.get('/', [ProductController, 'show'])
       })
       .prefix('/:id')

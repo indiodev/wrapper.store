@@ -1,5 +1,4 @@
 import { ProductService } from '#services/product.service'
-import StripeService from '#services/stripe.service'
 import {
   CreateProductValidator,
   QueryProductValidator,
@@ -10,10 +9,7 @@ import { HttpContext } from '@adonisjs/core/http'
 
 @inject()
 export default class ProductController {
-  constructor(
-    private productService: ProductService,
-    private stripeService: StripeService
-  ) {}
+  constructor(private productService: ProductService) {}
 
   async shopify(ctx: HttpContext) {
     const payload = await ctx.request.validateUsing(CreateProductValidator)

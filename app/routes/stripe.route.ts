@@ -12,6 +12,7 @@ export const StripeRoute = router
       .prefix('credential')
     router.get('charges', [StripeController, 'charges'])
     router.post('/create-product', [StripeController, 'createProduct'])
+    router.get('/checkout', [StripeController, 'checkout'])
   })
   .prefix('stripe')
   .middleware(middleware.auth())
