@@ -57,7 +57,7 @@ export class StoreService {
     return result
   }
 
-  async list(payload: QueryStoreDTO) {
+  async list(payload: Partial<QueryStoreDTO>) {
     const result = await this.storeRepository.list({ ...payload, userId: payload.user_id })
     return result
   }
