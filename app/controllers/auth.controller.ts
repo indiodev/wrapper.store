@@ -28,6 +28,6 @@ export default class AuthController {
   async shopifyCallback(ctx: HttpContext) {
     const payload = await ShopifyCallbackValidator.validate(ctx.request.qs())
     await this.authService.shopifyCallback(ctx, payload)
-    return ctx.response.redirect(`${env.get('DASHBOARD_APP_HOST')}/shopify-store`)
+    return ctx.response.redirect(`https://${env.get('DASHBOARD_APP_HOST')}/shopify-store`)
   }
 }
