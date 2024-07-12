@@ -13,9 +13,9 @@ export default class ProductController {
     return response.ok(result)
   }
 
-  async paginate({ request, response }: HttpContext) {
+  async paginate({ request, response, auth }: HttpContext) {
     const payload = await QueryProductValidator.validate(request.qs())
-    const result = await this.productService.paginate(payload)
+    const result = await this.productService.paginate({ ...payload, user_id: auth.user!.id })
     return response.ok(result)
   }
 }

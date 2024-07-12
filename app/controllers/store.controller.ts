@@ -37,14 +37,14 @@ export default class StoreController {
     return response.ok(result)
   }
 
-  async paginate({ request, response }: HttpContext) {
+  async paginate({ request, response, auth }: HttpContext) {
     const payload = await QueryStoreValidator.validate(request.qs())
-    const result = await this.storeService.paginate(payload)
+    const result = await this.storeService.paginate({ ...payload, user_id: auth.user!.id })
     return response.ok(result)
   }
 
-  async list({ response }: HttpContext) {
-    const result = await this.storeService.list()
+  async list({ response, auth }: HttpContext) {
+    const result = await this.storeService.list({ user_id: auth.user!.id })
     return response.ok(result)
   }
 }

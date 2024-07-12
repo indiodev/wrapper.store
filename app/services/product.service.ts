@@ -128,7 +128,7 @@ export class ProductService {
   }
 
   async paginate(payload: QueryProductDTO) {
-    const result = await this.productRepository.paginate(payload)
+    const result = await this.productRepository.paginate({ ...payload, userId: payload.user_id })
     return result
   }
 }

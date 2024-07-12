@@ -53,12 +53,12 @@ export class StoreService {
   }
 
   async paginate(payload: QueryStoreDTO) {
-    const result = await this.storeRepository.paginate(payload)
+    const result = await this.storeRepository.paginate({ ...payload, userId: payload.user_id })
     return result
   }
 
-  async list() {
-    const result = await this.storeRepository.list()
+  async list(payload: QueryStoreDTO) {
+    const result = await this.storeRepository.list({ ...payload, userId: payload.user_id })
     return result
   }
 }

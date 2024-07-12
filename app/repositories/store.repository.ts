@@ -75,11 +75,12 @@ export default class StoreRepository {
             .whereILike('hostname', `%${payload.search}%`)
             .orWhereILike('name', `%${payload.search}%`)
         )
+        .where('userId', payload.userId!)
         .paginate(page, per_page)
     })
   }
 
-  async list() {
-    return await Model.all()
+  async list(payload: Where<typeof Model>) {
+    return await Model.query().where('userId', payload.userId!)
   }
 }
